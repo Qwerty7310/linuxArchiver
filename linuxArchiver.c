@@ -9,6 +9,7 @@
 
 #define OK 0
 #define ERROR 1
+#define ERROR_OPEN_DIR 2
 #define BUF_SIZE 1024
 
 struct linux_dirent {
@@ -19,20 +20,28 @@ struct linux_dirent {
     char d_name[];
 };
 
+struct file_info {
+    uint64_t d_off;
+    unsigned int d_reclen;
+    unsigned int d_size;
+    char *d_path;
+    char *d_name;
+};
+
 // int printDir(char *path);
 int openDir(char *path);
 int printDir(char *path);
 
+int printFileName(char *name, char *path);
+int readDir(int directory, char *path, int (*function)(char *name, char *path));
+
 int main() {
     char *path1 = "/home/qwerty/OS/test1/";
     char *path2 = "../../test1/";
+    char *path3 = "../../dferfe/";
 
-    // if (printDir(path2) == ERROR) {
-    //     printf("Error\n");
-    // }
-
-    if (printDir(path2) == -1) {
-        perror("Error reading directory\n");
+    if (printDir(path1) == ERROR) {
+        perror("Error reading directory");
         return 0;
     }
 
@@ -45,16 +54,26 @@ int openDir(char *path) {
 }
 
 int printDir(char *path) {
+    int directory = openDir(path);
+    if (directory == -1) {
+        return ERROR_OPEN_DIR;
+    }
+    readDir(directory, path, &printFileName);
+    close(directory);
+    return OK;
+}
+
+int readDir(int directory, char *path, int (*function)(char *name, char *path)) {
     int nread;
     char buffer[BUF_SIZE];
-    int directory = openDir(path);
     int res = OK;
     while ((nread = syscall(SYS_getdents64, directory, buffer, BUF_SIZE)) > 0) {
         for (int bpos = 0; bpos < nread;) {
             struct linux_dirent *dir = (struct linux_dirent *)(buffer + bpos);
             if (strcmp(".", dir->d_name) && strcmp("..", dir->d_name)) {
                 struct stat stat_buf;
-                char *cur_path = (char *)malloc(strlen(path) + strlen(dir->d_name) + 1 + 1); //for '/' and '\0'
+                char *cur_path =
+                    (char *)malloc(strlen(path) + strlen(dir->d_name) + 1 + 1);  // for '/' and '\0'
                 strcpy(cur_path, path);
                 strcat(cur_path, dir->d_name);
                 if (stat(cur_path, &stat_buf) != 0) {
@@ -65,52 +84,51 @@ int printDir(char *path) {
                     strcat(cur_path, "/");
                     int res = printDir(cur_path);
                 } else {
-                    printf("%s\n", dir->d_name);
+                    (*function)(dir->d_name, path);
                 }
-
                 free(cur_path);
             }
             if (res == ERROR) {
                 return ERROR;
             }
-
             bpos += dir->d_reclen;
         }
     }
-
     if (nread == -1) {
         return ERROR;
     }
-
-    return OK;
 }
 
-// int printDir(char *path) {
-//     DIR *directory = opendir(path);
-//     if (directory == NULL) {
-//         return ERROR;
-//     }
-//     struct dirent *dir;
-//     while ((dir = readdir(directory)) != NULL) {
-//         if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")) {
-//             struct stat stat_buf;
-//             char *cur_path = (char *)malloc(strlen(path) + strlen(dir->d_name) + 1 + 1);  // for "\0" and
-//             "/" strcpy(cur_path, path); strcat(cur_path, dir->d_name); if (stat(cur_path, &stat_buf) != 0)
-//             {
-//                 printf("Error. Could not get information about the file\n");
-//                 return ERROR;
-//             }
-//             if (S_ISDIR(stat_buf.st_mode)) {
-//                 strcat(cur_path, "/");
-//                 if (printDir(cur_path)) {
-//                     return ERROR;
-//                 }
-//             } else {
-//                 printf("%s\n", dir->d_name);
-//             }
-//             free(cur_path);
-//         }
-//     }
+int printFileName(char *name, char *path) {
+    printf("%s %s\n", path, name);
+    return 0;
+}
 
-//     return OK;
-// }
+int archiving(char *path) {
+
+}
+
+int addFileToArchive(FILE *dest, char *name, char *path) {
+    char *full_name = (char *)malloc(strlen(path) + strlen(name) + 1);
+    strcpy(full_name, path);
+    strcat(full_name, name);
+
+    FILE *src = fopen(full_name, "r");
+
+    addFileInfo(dest, src, name, path);
+    addFileContent();
+
+    fclose(src);
+    free(full_name);
+    return 0;
+}
+
+int addFileInfo(FILE *dest, FILE *src, char *name, char *path) {
+    fseek(src, 0, SEEK_END);
+    int file_size = ftell(src);
+    fseek(src, 0, SEEK_SET);
+
+    struct file_info 
+
+    return 0;    
+}
