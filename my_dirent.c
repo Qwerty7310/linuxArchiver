@@ -50,9 +50,9 @@ struct dirent *readDir(DIR *dir) {
             perror("syscall");
             return NULL;
         }
-        if (nread == 0) {
+        if (nread == 0) 
             return NULL;
-        }
+        
 
         dir->buf_pos = 0;
         dir->buf_end = nread;
@@ -60,9 +60,9 @@ struct dirent *readDir(DIR *dir) {
 
     struct linux_dirent64 *entry = (struct linux_dirent64 *)(dir->buffer + dir->buf_pos);
     struct dirent *result = malloc(sizeof(struct dirent));
-    if (!result) {
+    if (!result) 
         return NULL;
-    }
+    
 
     result->d_ino = entry->d_ino;
     result->d_off = entry->d_off;
@@ -71,5 +71,7 @@ struct dirent *readDir(DIR *dir) {
     strncpy(result->d_name, entry->d_name, sizeof(result->d_name) - 1);
     result->d_name[sizeof(result->d_name) - 1] = '\0';
 
+    dir->buf_pos += entry->d_reclen;
+ 
     return result;
 }
