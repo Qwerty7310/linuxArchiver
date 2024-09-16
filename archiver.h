@@ -11,10 +11,11 @@ struct file_info {
     char d_name[BUF_SIZE];
 };
 
-FILE *archive(char *path);
+FILE *archive(char *path_src, char *path_res);
 int archiveDir(char *path, FILE *f_info, FILE *f_content, int *count);
 int addFileInfo(char *path, char *name, FILE *f_info);
 int addFileContent(char *full_path, FILE *f_content);
+int concatInfoAndContent(FILE *f_info, FILE *f_content, FILE *f_res, int n);
 int getFileSizeInBytes(FILE *file);
 
 #endif

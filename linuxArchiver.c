@@ -40,10 +40,12 @@ int main() {
     char *path2 = "../../test1/";
     char *path3 = "../../dferfe/";
 
-    FILE *f_info = fopen("f_info", "w");
-    FILE *f_content = fopen("f_content", "w");
     int cnt = 0;
     char buf[BUF_SIZE];
+
+    FILE *res = archive(path1, "archive.arch");
+
+    fclose(res);
 
     /*
     puts(realpath(path1, buf));
@@ -55,24 +57,19 @@ int main() {
     }
     */
 
-    archiveDir(path1, f_info, f_content, &cnt);
-    
 
-    fclose(f_info);
-    fclose(f_content);
+    // f_info = fopen("f_info", "r");
+    // for (int i = 0; i < cnt; i++) {
+    //     readFileInfo(f_content);
+    // }
+    // fclose(f_info);
 
-    f_info = fopen("f_info", "r");
-    for (int i = 0; i < cnt; i++) {
-        readFileInfo(f_content);
-    }
-    fclose(f_info);
-
-    f_content = fopen("f_content", "r");
-    for (int i = 0; i < 20; i++) {
-        char c = getc(f_content);
-        printf("%c", c);
-    }
-    fclose(f_content);
+    // f_content = fopen("f_content", "r");
+    // for (int i = 0; i < 20; i++) {
+    //     char c = getc(f_content);
+    //     printf("%c", c);
+    // }
+    // fclose(f_content);
 
     // DIR *directory = openDir(path1);
     // for (int i = 0; i < 10; i++) {
