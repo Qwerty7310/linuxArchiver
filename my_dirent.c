@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/syscall.h>
@@ -5,7 +6,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include <stdio.h>
+
 
 #include "my_dirent.h"
 
