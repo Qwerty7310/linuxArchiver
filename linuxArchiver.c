@@ -83,21 +83,36 @@ int main() {
 }
 
 int readFileInfo(FILE *file) {
-    int n;
-    fscanf(file, "%d", &n);
+    int cnt_dir;
+    
 
     char root_dir_name[BUF_SIZE];
     fread(root_dir_name, sizeof(root_dir_name), 1, file);
-    printf("root_dir: %s\n", root_dir_name);
+    
 
-    struct FileInfo *buffer = (struct FileInfo *)malloc(n * sizeof(struct FileInfo));
-    fread(buffer, sizeof(struct FileInfo), n, file);
+    fscanf(file, "%d", &cnt_dir);
+
+    printf("root_dir: %s, %d\n", root_dir_name, cnt_dir);
+
+    
+    for (int i = 0; i < cnt_dir; i++) {
+        char buffer_dir[BUF_SIZE];
+        fread(buffer_dir, BUF_SIZE, 1, file);
+        printf("dir: %s\n", buffer_dir);
+    }
+
+    int cnt_file;
+    fscanf(file, "%d", &cnt_file);
+
+
+    struct FileInfo *buffer_files = (struct FileInfo *)malloc(cnt_file * sizeof(struct FileInfo));
+    fread(buffer_files, sizeof(struct FileInfo), cnt_file, file);
 
     // fread(buffer, sizeof(struct file_info), 1, f_info);
 
-    for (int i = 0; i < n; i++) {
-        printf("path: %s\n", buffer[i].d_path);
-        printf("name: %s\n", buffer[i].d_name);
+    for (int i = 0; i < cnt_file; i++) {
+        printf("path: %s\n", buffer_files[i].d_path);
+        printf("name: %s\n", buffer_files[i].d_name);
     }
 
     return 0;
