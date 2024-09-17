@@ -57,7 +57,8 @@ int unarchive(char *path_arch, char *path_dir) {
         char buffer_dir[BUF_SIZE];
         fread(buffer_dir, BUF_SIZE, 1, arch);
 
-        new_path = (char *)malloc(strlen(path_dir) + strlen(root_dir_name) + strlen(buffer_dir) + 1 + 1);
+        new_path = (char *)malloc(strlen(path_dir) + strlen(root_dir_name) + strlen(buffer_dir) + 1 +
+                                  1);  // for '/' and '\0'
         strcpy(new_path, path_dir);
         strcat(new_path, root_dir_name);
         strcat(new_path, "/");
@@ -67,41 +68,31 @@ int unarchive(char *path_arch, char *path_dir) {
     }
 
     int cnt_file;
-    fscanf(file, "%d", &cnt_file);
+    fscanf(arch, "%d", &cnt_file);
 
-    // struct FileInfo *buffer_files = (struct FileInfo *)malloc(cnt_file * sizeof(struct FileInfo));
-    // fread(buffer_files, sizeof(struct FileInfo), cnt_file, file);
+    struct FileInfo *file_info_buf = (struct FileInfo *)malloc(cnt_file * sizeof(struct FileInfo));
+    fread(file_info_buf, sizeof(struct FileInfo), cnt_file, arch);
 
-    // // fread(buffer, sizeof(struct file_info), 1, f_info);
+    for (int i = 0; i < cnt_file; i++) {
+        char *full_path = (char *)malloc(strlen(path_dir) + strlen(root_dir_name) + 1 +
+                                         strlen(file_info_buf[i].d_path) + 1);  // for '/' and '\0'
+        strcpy(full_path, path_dir);
+        strcat(full_path, root_dir_name);
+        strcat(full_path, "/");
+        strcat(full_path, file_info_buf[i].d_path);
+        strcat(full_path, file_info_buf[i].d_name);
 
-    // for (int i = 0; i < cnt_file; i++) {
-    //     printf("path: %s\n", buffer_files[i].d_path);
-    //     printf("name: %s\n", buffer_files[i].d_name);
-    // }
+        FILE *file = fopen(full_path, "w");
 
-    /*--------------------------------------------------------------------------------*/
-    // FILE *file = fopen(path_arch);
-    // if (!file) {
-    //     perror("fopen");
-    //     return ERROR;
-    // }
+        for (int j = 0; j < file_info_buf[i].d_size; j++) {
+            char c = fgetc(arch);
+            fputc(c, file);
+        }
+        fclose(file);
+        free(full_path);
+    }
 
-    // int n_entries = 0;
-    // fscanf("%d", &n_entries);
-
-    // char root_dir_name[BUF_SIZE];
-    // fread(root_dir_name, sizeof(root_dir_name), 1, file);
-    // printf("root_dir: %s", root_dir_name);
-
-    // struct FileInfo *buffer = (struct FileInfo *)malloc(n_entries * sizeof(struct FileInfo));
-
-    // fread(buffer, sizeof(struct FileInfo), n_entries, file);
-
-    // for (int i = 0; i < n_entries; i++) {
-    //     if (checkDir(path_dir) = ERROR) {
-    //         mkdir(path_dir)
-    //     }
-    // }
+    free(file_info_buf);
 
     return OK;
 }
@@ -110,11 +101,9 @@ int checkDir(char *path) {
     char buf[BUF_SIZE];
     realpath(path, buf);
     if (realpath(path, buf) != NULL) {
-        char *dir_name = basename(buf);  // Получаем имя каталога
-        // printf("Имя каталога: %s\n", dir_name);
+        char *dir_name = basename(buf);  // Get directory name
         return OK;
     } else {
-        // perror("Ошибка получения реального пути");
         return ERROR;
     }
 }

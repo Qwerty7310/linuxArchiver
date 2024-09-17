@@ -19,35 +19,17 @@
 #define ERROR 1
 #define BUF_SIZE 1024
 
-// struct linux_dirent {
-//     uint64_t d_ino;
-//     int64_t d_off;
-//     unsigned short d_reclen;
-//     unsigned char d_type;
-//     char d_name[];
-// };
-
-// struct file_info {
-//     unsigned int d_size;
-//     char d_path[BUF_SIZE];
-//     char d_name[BUF_SIZE];
-// };
-
-int readFileInfo(FILE *f_info);
+// int readFileInfo(FILE *f_info);
 
 int main() {
     char *path1 = "/home/qwerty/OS/test1/";
     char *path2 = "../../test1/";
     char *path3 = "../../dferfe/";
 
-    int cnt = 0;
-    // char buf[BUF_SIZE];
-
     FILE *res = archive(path1, "../../archive.arch");
 
     fclose(res);
 
-    // res = fopen("../../archive.arch", "r");
     unarchive("../../archive.arch", "/home/qwerty/OS/Lab_1/");
     // readFileInfo(res);
 
