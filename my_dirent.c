@@ -1,14 +1,12 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/syscall.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdint.h>
-
-
-
 #include "my_dirent.h"
+
+#include <fcntl.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 
 #define BUF_SIZE 1024
 
@@ -51,9 +49,7 @@ struct dirent *readDir(DIR *dir) {
             perror("syscall");
             return NULL;
         }
-        if (nread == 0) 
-            return NULL;
-        
+        if (nread == 0) return NULL;
 
         dir->buf_pos = 0;
         dir->buf_end = nread;
@@ -61,9 +57,7 @@ struct dirent *readDir(DIR *dir) {
 
     struct linux_dirent64 *entry = (struct linux_dirent64 *)(dir->buffer + dir->buf_pos);
     struct dirent *result = malloc(sizeof(struct dirent));
-    if (!result) 
-        return NULL;
-    
+    if (!result) return NULL;
 
     result->d_ino = entry->d_ino;
     result->d_off = entry->d_off;
@@ -73,6 +67,6 @@ struct dirent *readDir(DIR *dir) {
     result->d_name[sizeof(result->d_name) - 1] = '\0';
 
     dir->buf_pos += entry->d_reclen;
- 
+
     return result;
 }

@@ -1,6 +1,5 @@
 CC = gcc
 CFLAGS = 
-CPATH = .
 TARGET = linux_archiver
 
 all: clean $(TARGET)
@@ -21,3 +20,9 @@ clean:
 	rm -rf *.o 
 
 rebuild: clean all
+
+clang:
+	clang-format -i *.c *.h
+
+del:
+	rm -rf ../../archive.arch

@@ -1,6 +1,8 @@
 #ifndef MY_DIRENT
 #define MY_DERENT
 
+#include <stdint.h>
+
 #define BUF_SIZE 1024
 
 typedef struct {
@@ -12,7 +14,7 @@ typedef struct {
 
 struct dirent {
     uint64_t d_ino;
-    off_t d_off;
+    int64_t d_off;
     unsigned short d_reclen;
     unsigned char d_type;
     char d_name[256];

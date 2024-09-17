@@ -11,13 +11,12 @@
 #include <sys/stat.h>
 // #include <sys/syscall.h>
 
-#include "my_dirent.h"
 #include "archiver.h"
+#include "my_dirent.h"
 
 #define OK 0
 #define ERROR 1
 #define BUF_SIZE 1024
-
 
 // struct linux_dirent {
 //     uint64_t d_ino;
@@ -41,11 +40,14 @@ int main() {
     char *path3 = "../../dferfe/";
 
     int cnt = 0;
-    char buf[BUF_SIZE];
+    // char buf[BUF_SIZE];
 
-    FILE *res = archive(path1, "archive.arch");
+    FILE *res = archive(path1, "../../archive.arch");
 
     fclose(res);
+
+    res = fopen("../../archive.arch", "r");
+    readFileInfo(res);
 
     /*
     puts(realpath(path1, buf));
@@ -56,7 +58,6 @@ int main() {
         perror("Ошибка получения реального пути");
     }
     */
-
 
     // f_info = fopen("f_info", "r");
     // for (int i = 0; i < cnt; i++) {
@@ -81,13 +82,23 @@ int main() {
     return 0;
 }
 
-int readFileInfo(FILE *f_info) {
-    struct file_info *buffer = (struct file_info *)malloc(sizeof(struct file_info));
-    fread(buffer, sizeof(struct file_info), 1, f_info);
+int readFileInfo(FILE *file) {
+    int n;
+    fscanf(file, "%d", &n);
 
-    printf("path: %s\n", buffer->d_path);
-    printf("name: %s\n", buffer->d_name);
+    char root_dir_name[BUF_SIZE];
+    fread(root_dir_name, sizeof(root_dir_name), 1, file);
+    printf("root_dir: %s\n", root_dir_name);
+
+    struct FileInfo *buffer = (struct FileInfo *)malloc(n * sizeof(struct FileInfo));
+    fread(buffer, sizeof(struct FileInfo), n, file);
+
+    // fread(buffer, sizeof(struct file_info), 1, f_info);
+
+    for (int i = 0; i < n; i++) {
+        printf("path: %s\n", buffer[i].d_path);
+        printf("name: %s\n", buffer[i].d_name);
+    }
 
     return 0;
 }
-
