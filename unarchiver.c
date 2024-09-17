@@ -51,7 +51,7 @@ int unarchive(char *path_arch, char *path_dir) {
     }
     free(new_path);
 
-    // printf("root_dir: %s, %d\n", root_dir_name, cnt_dir);
+    printf("root_dir: %s, %d\n", root_dir_name, cnt_dir);
 
     for (int i = 0; i < cnt_dir; i++) {
         char buffer_dir[BUF_SIZE];
@@ -64,23 +64,29 @@ int unarchive(char *path_arch, char *path_dir) {
         strcat(new_path, "/");
         strcat(new_path, buffer_dir);
         mkdir(new_path, 0700);
-        // puts(new_path);
+        puts(new_path);
     }
+    printf("\n");
 
     int cnt_file;
     fscanf(arch, "%d", &cnt_file);
+
+    printf("files: %d\n", cnt_file);
 
     struct FileInfo *file_info_buf = (struct FileInfo *)malloc(cnt_file * sizeof(struct FileInfo));
     fread(file_info_buf, sizeof(struct FileInfo), cnt_file, arch);
 
     for (int i = 0; i < cnt_file; i++) {
-        char *full_path = (char *)malloc(strlen(path_dir) + strlen(root_dir_name) + 1 +
-                                         strlen(file_info_buf[i].d_path) + 1);  // for '/' and '\0'
+        char *full_path =
+            (char *)malloc(strlen(path_dir) + strlen(root_dir_name) + 1 + strlen(file_info_buf[i].d_path) +
+                           strlen(file_info_buf[i].d_name) + 1);  // for '/' and '\0'
         strcpy(full_path, path_dir);
         strcat(full_path, root_dir_name);
         strcat(full_path, "/");
         strcat(full_path, file_info_buf[i].d_path);
         strcat(full_path, file_info_buf[i].d_name);
+
+        puts(full_path);
 
         FILE *file = fopen(full_path, "w");
 

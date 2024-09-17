@@ -22,7 +22,7 @@
 // int readFileInfo(FILE *f_info);
 
 int main() {
-    char *path1 = "/home/qwerty/OS/test1/";
+    char *path1 = "/home/qwerty/OS/test3/";
     char *path2 = "../../test1/";
     char *path3 = "../../dferfe/";
 

@@ -22,7 +22,7 @@ unarchiver.o: unarchiver.c
 clean:
 	rm -rf *.o 
 	rm -rf ../../archive.arch
-	rm -rf ../test1
+	rm -rf ../test*
 
 rebuild: clean all
 
