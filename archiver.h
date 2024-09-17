@@ -3,13 +3,13 @@
 
 #include <stdio.h>
 
-#define BUF_SIZE 1024
+// #define BUF_SIZE 1024
 
-struct FileInfo {
-    unsigned int d_size;
-    char d_path[BUF_SIZE];
-    char d_name[BUF_SIZE];
-};
+// struct FileInfo {
+//     unsigned int d_size;
+//     char d_path[BUF_SIZE];
+//     char d_name[BUF_SIZE];
+// };
 
 FILE *archive(char *path_src, char *path_res);
 // int archiveDir(char *root_path, char *path, FILE *f_info, FILE *f_content, int *count);

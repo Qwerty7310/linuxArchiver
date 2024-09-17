@@ -1,5 +1,3 @@
-#include "archiver.h"
-
 #include <fcntl.h>
 #include <libgen.h>  // for basename()
 #include <stdint.h>
@@ -9,6 +7,8 @@
 #include <sys/stat.h>
 
 #include "my_dirent.h"
+#include "archiver.h"
+#include "file_info.h"
 
 #define OK 0
 #define ERROR 1
@@ -49,6 +49,7 @@ FILE *archive(char *path_src, char *path_res) {
     fwrite(root_dir_name, sizeof(root_dir_name), 1, f_res);
 
     concatInfoAndContent(f_dir_info, f_info, f_content, f_res, cnt_dir, cnt_file);
+    remove(FILE_DIR_INFO_NAME);
     remove(FILE_INFO_NAME);
     remove(FILE_CONTENT_NAME);
 
