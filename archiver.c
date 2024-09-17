@@ -1,3 +1,5 @@
+#include "archiver.h"
+
 #include <fcntl.h>
 #include <libgen.h>  // for basename()
 #include <stdint.h>
@@ -6,9 +8,8 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "my_dirent.h"
-#include "archiver.h"
 #include "file_info.h"
+#include "my_dirent.h"
 
 #define OK 0
 #define ERROR 1
@@ -56,7 +57,8 @@ FILE *archive(char *path_src, char *path_res) {
     return f_res;
 }
 
-int archiveDir(char *root_path, char *path, FILE *f_dir_info, FILE *f_info, FILE *f_content, int *cnt_dir, int *cnt_file) {
+int archiveDir(char *root_path, char *path, FILE *f_dir_info, FILE *f_info, FILE *f_content, int *cnt_dir,
+               int *cnt_file) {
     DIR *directory = openDir(path);
     if (directory == NULL) return ERROR;
 
@@ -85,7 +87,7 @@ int archiveDir(char *root_path, char *path, FILE *f_dir_info, FILE *f_info, FILE
             free(cur_path);
         }
         // if (dir) free(dir);
-        
+
     }
 
     for (int i = 0; i < cnt; i++) {
@@ -94,15 +96,16 @@ int archiveDir(char *root_path, char *path, FILE *f_dir_info, FILE *f_info, FILE
 
     qsort(p_dir, cnt, sizeof(struct dirent *), compare);
     */
-   (*cnt_dir) += 1;
+    (*cnt_dir) += 1;
     addDirInfo(root_path, path, f_dir_info);
 
     while ((dir = readDir(directory)) != NULL) {
         if (strcmp(dir->d_name, ".") && strcmp(dir->d_name, "..")) {
             struct stat stat_buf;
             char *cur_path = (char *)malloc(strlen(path) + strlen(dir->d_name) + 1 + 1);  // for '\0' and '/'
-            strcpy(cur_path, path); strcat(cur_path, dir->d_name); if (stat(cur_path, &stat_buf) != 0)
-            {
+            strcpy(cur_path, path);
+            strcat(cur_path, dir->d_name);
+            if (stat(cur_path, &stat_buf) != 0) {
                 closeDir(directory);
                 free(cur_path);
                 perror("stat");
@@ -111,7 +114,8 @@ int archiveDir(char *root_path, char *path, FILE *f_dir_info, FILE *f_info, FILE
             }
             if (S_ISDIR(stat_buf.st_mode)) {
                 strcat(cur_path, "/");
-                if (archiveDir(root_path, cur_path, f_dir_info, f_info, f_content, cnt_dir, cnt_file) == ERROR) {
+                if (archiveDir(root_path, cur_path, f_dir_info, f_info, f_content, cnt_dir, cnt_file) ==
+                    ERROR) {
                     free(cur_path);
                     closeDir(directory);
                     if (dir) free(dir);
@@ -141,7 +145,6 @@ int addDirInfo(char *root_path, char *path, FILE *f_dir_info) {
         fseek(f_dir_info, 0, SEEK_END);
         fwrite(relative_path, sizeof(relative_path), 1, f_dir_info);
     }
-    
 
     return 0;
 }
@@ -187,7 +190,8 @@ int addFileContent(char *full_path, FILE *f_content) {
 }
 
 // int concatInfoAndContent(FILE *f_dir_info, FILE *f_info, FILE *f_content, FILE *f_res) {
-int concatInfoAndContent(FILE *f_dir_info, FILE *f_info, FILE *f_content, FILE *f_res, int cnt_dir, int cnt_file) {
+int concatInfoAndContent(FILE *f_dir_info, FILE *f_info, FILE *f_content, FILE *f_res, int cnt_dir,
+                         int cnt_file) {
     int f_dir_info_size = getFileSizeInBytes(f_dir_info);
     int f_info_size = getFileSizeInBytes(f_info);
     int f_content_size = getFileSizeInBytes(f_content);
