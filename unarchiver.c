@@ -16,34 +16,29 @@
 #define BUF_SIZE 1024
 
 int unarchive(char *path_arch, char *path_dir) {
-    FILE *arch = fopen(path_arch, "r");
+    FILE *arch = fopen(path_arch, "r");  // файл архива
     if (!arch) {
         perror("open archive");
         return ERROR;
     }
-    int cnt_dir;
-    char root_dir_name[BUF_SIZE];
+    int cnt_dir;                   // количество директорий
+    char root_dir_name[BUF_SIZE];  // имя корневой директории архива
     fread(root_dir_name, sizeof(root_dir_name), 1, arch);
     fscanf(arch, "%d", &cnt_dir);
 
-    puts(path_dir);
-    puts(root_dir_name);
-
-    char *new_path = (char *)malloc(strlen(path_dir) + strlen(root_dir_name) + 1);
+    char *new_path =
+        (char *)malloc(strlen(path_dir) + strlen(root_dir_name) + 1);  // путь до директории вместе с именем
     strcpy(new_path, path_dir);
     strcat(new_path, root_dir_name);
-    puts(new_path);
 
-    if (checkDir(path_dir) == OK) {
-        // puts(new_path);
-        // puts("\n");
+    if (checkDir(path_dir) == OK) {  // проверка на наличие
         if (checkDir(new_path) == OK) {
             perror("such a directory already exists");
             free(new_path);
             return ERROR;
-        } else {
-            mkdir(new_path, 0700);
-        }
+        } else
+            mkdir(new_path, 0700);  // создание
+
     } else {
         perror("there is no such directory");
         free(new_path);
@@ -51,12 +46,9 @@ int unarchive(char *path_arch, char *path_dir) {
     }
     free(new_path);
 
-    printf("root_dir: %s, %d\n", root_dir_name, cnt_dir);
-
     for (int i = 0; i < cnt_dir; i++) {
         char buffer_dir[BUF_SIZE];
         fread(buffer_dir, BUF_SIZE, 1, arch);
-
         new_path = (char *)malloc(strlen(path_dir) + strlen(root_dir_name) + strlen(buffer_dir) + 1 +
                                   1);  // for '/' and '\0'
         strcpy(new_path, path_dir);
@@ -64,14 +56,11 @@ int unarchive(char *path_arch, char *path_dir) {
         strcat(new_path, "/");
         strcat(new_path, buffer_dir);
         mkdir(new_path, 0700);
-        puts(new_path);
+        free(new_path);
     }
-    printf("\n");
 
     int cnt_file;
     fscanf(arch, "%d", &cnt_file);
-
-    printf("files: %d\n", cnt_file);
 
     struct FileInfo *file_info_buf = (struct FileInfo *)malloc(cnt_file * sizeof(struct FileInfo));
     fread(file_info_buf, sizeof(struct FileInfo), cnt_file, arch);
@@ -86,10 +75,7 @@ int unarchive(char *path_arch, char *path_dir) {
         strcat(full_path, file_info_buf[i].d_path);
         strcat(full_path, file_info_buf[i].d_name);
 
-        puts(full_path);
-
         FILE *file = fopen(full_path, "w");
-
         for (int j = 0; j < file_info_buf[i].d_size; j++) {
             char c = fgetc(arch);
             fputc(c, file);
@@ -97,9 +83,8 @@ int unarchive(char *path_arch, char *path_dir) {
         fclose(file);
         free(full_path);
     }
-
     free(file_info_buf);
-
+    fclose(arch);
     return OK;
 }
 
@@ -109,7 +94,6 @@ int checkDir(char *path) {
     if (realpath(path, buf) != NULL) {
         char *dir_name = basename(buf);  // Get directory name
         return OK;
-    } else {
+    } else
         return ERROR;
-    }
 }

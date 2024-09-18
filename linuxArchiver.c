@@ -16,14 +16,10 @@
 int main(int argc, char *argv[]) {
     if (argc == 3) {
 #ifdef ARCH
-        char *path1 = "/home/qwerty/OS/test3/";
-        char *path2 = "../../test1/";
-        char *path3 = "../../dferfe/";
-
-        // FILE *res = archive(path1, "../../archive.arch");
-        puts(argv[1]);
+        // FILE *res = archive("/home/qwerty/OS/test1/", "../../archive.arch");
+        // FILE *res = archive("../../test1/", "../../archive.arch");
         FILE *res =
-            archive(argv[1], argv[2]);  // ./linux_archiver '/home/qwerty/OS/test3/' '../../archive.arch'
+            archive(argv[1], argv[2]);  // ./linux_archiver '/home/qwerty/OS/test1/' '../../archive.arch'
         fclose(res);
 #endif
 
@@ -31,9 +27,8 @@ int main(int argc, char *argv[]) {
         unarchive(argv[1], argv[2]);  // ./linux_unarchiver '../../archive.arch' '/home/qwerty/OS/Lab_1/'
 #endif
 
-    } else {
-        perror("incorrect input");
-    }
+    } else
+        puts("incorrect input");
 
     return 0;
 }
