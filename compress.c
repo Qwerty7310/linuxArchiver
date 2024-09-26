@@ -3,6 +3,8 @@
 
 #define WINDOW_SIZE 1024
 #define LOOKAHEAD_BUFFER_SIZE 32
+// ferfefeeefe
+int a = 0;
 
 typedef struct {
     int offset;
