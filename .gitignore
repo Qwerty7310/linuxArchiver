@@ -54,6 +54,6 @@ dkms.conf
 .clang-format
 linux_archiver
 linux_unarchiver
-.txt
-.png
-.jpg
+*.txt
+*.png
+*.jpg
