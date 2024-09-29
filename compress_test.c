@@ -15,7 +15,6 @@ FILE *deflate(FILE *file, char *path);
 FILE *inflate(FILE *file, char *path);
 int getFileSizeInBytes(FILE *file);
 
-
 int main() {
     // const char *data = "ABABABABABABABABABABABABAB";
     // int data_size = strlen(data);
@@ -25,7 +24,6 @@ int main() {
     // FILE *file = fopen("./Pushkin.jpg", "r");
     // FILE *file = fopen("./Im.png", "r");
     FILE *file = fopen("./file_res.tmp", "r");
-
 
     if (!file) {
         perror("open");
@@ -40,12 +38,10 @@ int main() {
         // inflate(zip_file, "./111111.tmp");
         inflate(zip_file, "./111111.tmp");
         printf("SUCCESS");
-
     }
 
     return 0;
 }
-
 
 // Поиск наибольшего совпадения строки в окне
 Token *findLongestMatch(char *str, int str_size, int buf_size) {
@@ -69,8 +65,7 @@ Token *findLongestMatch(char *str, int str_size, int buf_size) {
             token->offset = buf_size - i;
         }
     }
-    if (token->offset == 0) 
-        token->length = str[buf_size];
+    if (token->offset == 0) token->length = str[buf_size];
 
     return token;
 }
@@ -107,7 +102,7 @@ FILE *deflate(FILE *file, char *path) {
 
             if (token->offset != 0) {
                 i += token->length;
-            } else 
+            } else
                 i += 1;
 
             free(token);

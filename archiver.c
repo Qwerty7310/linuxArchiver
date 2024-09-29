@@ -8,9 +8,9 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "compress.h"
 #include "file_info.h"
 #include "my_dirent.h"
-#include "compress.h"
 
 #define OK 0
 #define ERROR 1

@@ -1,8 +1,9 @@
+#include "compress.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "compress.h"
 #include "my_dirent.h"
 
 #define WINDOW_SIZE 256
@@ -57,8 +58,7 @@ Token *findLongestMatch(char *str, int str_size, int buf_size) {
             token->offset = buf_size - i;
         }
     }
-    if (token->offset == 0) 
-        token->length = str[buf_size];
+    if (token->offset == 0) token->length = str[buf_size];
 
     return token;
 }
@@ -67,7 +67,7 @@ FILE *deflate(FILE *file, char *path) {
     FILE *zip_file = fopen(path, "w");
     int file_size = getFileSizeInBytes(file);
     // int steps = ((int)(file_size / WINDOW_SIZE) == (file_size / WINDOW_SIZE)) ? (file_size / WINDOW_SIZE)
-                                                                            //   : (file_size / WINDOW_SIZE + 1);
+    //   : (file_size / WINDOW_SIZE + 1);
     char buffer[WINDOW_SIZE];
     while (file_size > 0) {
         int cur_size = 0;
@@ -95,13 +95,13 @@ FILE *deflate(FILE *file, char *path) {
 
             if (token->offset != 0) {
                 i += token->length;
-            } else 
+            } else
                 i += 1;
 
             free(token);
         }
     }
-    
+
     // fclose(zip_file);
     return zip_file;
 }

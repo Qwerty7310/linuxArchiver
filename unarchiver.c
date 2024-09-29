@@ -8,9 +8,9 @@
 #include <string.h>
 #include <sys/stat.h>
 
+#include "compress.h"
 #include "file_info.h"
 #include "my_dirent.h"
-#include "compress.h"
 
 #define OK 0
 #define ERROR 1
@@ -24,7 +24,7 @@ int unarchive(char *path_arch, char *path_dir) {
         perror("open archive");
         return ERROR;
     }
-    
+
     FILE *arch = inflate(zip_arch, UNZIP_FILE_NAME);
     fclose(arch);
     arch = fopen(UNZIP_FILE_NAME, "r");
