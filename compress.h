@@ -1,6 +1,8 @@
 #ifndef COMPRESS
 #define COMPRESS
 
+#include <stdio.h>
+
 typedef struct {
     unsigned char offset;
     unsigned char length;  // or char, if offset = 0

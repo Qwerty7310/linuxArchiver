@@ -1,7 +1,7 @@
 CC = gcc
 TARGET1 = linux_archiver
 TARGET2 = linux_unarchiver
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = 
 CPATH = ./bin
 
 SRC_FILES = linux_archiver.c my_dirent.c archiver.c unarchiver.c compress.c

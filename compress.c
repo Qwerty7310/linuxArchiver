@@ -8,33 +8,7 @@
 
 #define WINDOW_SIZE 256
 #define LOOKAHEAD_BUFFER_SIZE 32
-
-/*
-int main() {
-    const char *data = "ABABABABABABABABABABABABAB";
-    int data_size = strlen(data);
-    char arr[WINDOW_SIZE];
-
-    // FILE *file = fopen("./file.txt", "r");
-    // FILE *file = fopen("./Pushkin.jpg", "r");
-    FILE *file = fopen("./Im.png", "r");
-
-
-    if (!file) {
-        perror("open");
-    } else {
-        printf("%ld\n", sizeof(Token));
-        deflate(file, "./zip_file.txt");
-
-        FILE *zip_file = fopen("./zip_file.txt", "r");
-        // inflate(zip_file, "./new_file.txt");
-        // inflate(zip_file, "./new_Pushkin.jpg");
-        inflate(zip_file, "./new_im.png");
-    }
-
-    return 0;
-}
-*/
+#define KEY_STR "#archive#"
 
 // Поиск наибольшего совпадения строки в окне
 Token *findLongestMatch(char *str, int str_size, int buf_size) {
@@ -65,9 +39,15 @@ Token *findLongestMatch(char *str, int str_size, int buf_size) {
 
 FILE *deflate(FILE *file, char *path) {
     FILE *zip_file = fopen(path, "w");
+    if (!zip_file) {
+        perror("fopen");
+        return NULL;
+    }
+
+    // ключ архива
+    fprintf(zip_file, KEY_STR);
+
     int file_size = getFileSizeInBytes(file);
-    // int steps = ((int)(file_size / WINDOW_SIZE) == (file_size / WINDOW_SIZE)) ? (file_size / WINDOW_SIZE)
-    //   : (file_size / WINDOW_SIZE + 1);
     char buffer[WINDOW_SIZE];
     while (file_size > 0) {
         int cur_size = 0;
@@ -78,7 +58,10 @@ FILE *deflate(FILE *file, char *path) {
             cur_size = file_size;
             file_size = 0;
         }
-        fread(buffer, sizeof(char), cur_size, file);
+        if ((int)fread(buffer, sizeof(char), cur_size, file) < cur_size) {
+            perror("fread");
+            return NULL;
+        }
 
         for (int i = 0; i < cur_size;) {
             Token *token = findLongestMatch(buffer, cur_size, i);
@@ -87,11 +70,10 @@ FILE *deflate(FILE *file, char *path) {
                 return NULL;
             }
 
-            // if (token->offset < 0) {
-            //     perror("token->offset < 0");
-            //     return NULL;
-            // }
-            fwrite(token, 2, 1, zip_file);
+            if (fwrite(token, 2, 1, zip_file) < 1) {
+                perror("fwrite");
+                return NULL;
+            }
 
             if (token->offset != 0) {
                 i += token->length;
@@ -102,21 +84,44 @@ FILE *deflate(FILE *file, char *path) {
         }
     }
 
-    // fclose(zip_file);
     return zip_file;
 }
 
 FILE *inflate(FILE *file, char *path) {
     FILE *new_file = fopen(path, "w");
+    if (!new_file) {
+        perror("fopen");
+        return NULL;
+    }
+
     char buffer[WINDOW_SIZE] = {0};
     int ptr = 0;
     int file_size = getFileSizeInBytes(file);
-    if (file_size % 2 != 0) return NULL;
+
+    // проверка на архив
+    char buf_key[10] = {0};
+    fread(buf_key, 1, 9, file);
+    buf_key[10] = '\0';
+
+    if (strcmp(buf_key, KEY_STR) != 0) {
+        puts("This file is not an archive.");
+        return NULL;
+    }
+
+    file_size -= sizeof(KEY_STR) - 1;  // уменьшаем размер файла на размер ключа
+
+    if ((file_size) % 2 != 0) {
+        puts("Error.");
+        return NULL;
+    }
 
     for (int i = 0; i < file_size / 2; i++) {
         unsigned char off = 0, len = 0;
 
-        fscanf(file, "%c%c", &off, &len);
+        if (fscanf(file, "%c%c", &off, &len) < 2) {
+            perror("fscanf");
+            return NULL;
+        }
 
         // printf("off = %d; len = %d\n", off, len);
 
@@ -130,21 +135,20 @@ FILE *inflate(FILE *file, char *path) {
             }
         }
         if (ptr >= WINDOW_SIZE) {
-            fwrite(buffer, 1, WINDOW_SIZE, new_file);
+            if (fwrite(buffer, 1, WINDOW_SIZE, new_file) < WINDOW_SIZE) {
+                perror("fwrite");
+                return NULL;
+            }
             ptr = 0;
         }
     }
+
     if (ptr != 0) {
-        fwrite(buffer, 1, ptr, new_file);
+        if ((int)fwrite(buffer, 1, ptr, new_file) < ptr) {
+            perror("fwrite");
+            return NULL;
+        }
     }
 
     return new_file;
 }
-
-// int getFileSizeInBytes(FILE *file) {
-//     int size = 0;
-//     fseek(file, 0, SEEK_END);
-//     size = ftell(file);
-//     rewind(file);
-//     return size;
-// }

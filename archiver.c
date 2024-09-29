@@ -47,6 +47,8 @@ FILE *archive(char *path_src, char *path_res) {
     char root_dir_name[BUF_SIZE];
     getDirName(path_src, root_dir_name);
 
+    // fprintf(f_res, "#archive#");
+
     fwrite(root_dir_name, sizeof(root_dir_name), 1, f_res);
 
     concatInfoAndContent(f_dir_info, f_info, f_content, f_res, cnt_dir, cnt_file);
@@ -61,10 +63,9 @@ FILE *archive(char *path_src, char *path_res) {
     f_res = fopen(FILE_RES_NAME, "r");
     FILE *f_zip = deflate(f_res, path_res);
     fclose(f_res);
-    // remove(FILE_RES_NAME);
+    // remove(FILE_RES_NAME); // архив без сжатия
 
     return f_zip;
-    // return f_res;
 }
 
 int archiveDir(char *root_path, char *path, FILE *f_dir_info, FILE *f_info, FILE *f_content, int *cnt_dir,
@@ -114,15 +115,12 @@ int archiveDir(char *root_path, char *path, FILE *f_dir_info, FILE *f_info, FILE
 
 int addDirInfo(char *root_path, char *path, FILE *f_dir_info) {
     char relative_path[BUF_SIZE];
-    // strcpy(relative_path, "./");
-
     if (strlen(path) > strlen(root_path)) {
         strcpy(relative_path, path + strlen(root_path));
 
         fseek(f_dir_info, 0, SEEK_END);
         fwrite(relative_path, sizeof(relative_path), 1, f_dir_info);
     }
-
     return 0;
 }
 
@@ -200,11 +198,3 @@ int getDirName(char *path, char *name) {
     } else
         return ERROR;
 }
-
-// int getFileSizeInBytes(FILE *file) {
-//     int size = 0;
-//     fseek(file, 0, SEEK_END);
-//     size = ftell(file);
-//     rewind(file);
-//     return size;
-// }
