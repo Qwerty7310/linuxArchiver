@@ -47,8 +47,6 @@ FILE *archive(char *path_src, char *path_res) {
     char root_dir_name[BUF_SIZE];
     getDirName(path_src, root_dir_name);
 
-    // fprintf(f_res, "#archive#");
-
     fwrite(root_dir_name, sizeof(root_dir_name), 1, f_res);
 
     concatInfoAndContent(f_dir_info, f_info, f_content, f_res, cnt_dir, cnt_file);

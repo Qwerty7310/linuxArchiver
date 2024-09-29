@@ -26,7 +26,6 @@ int unarchive(char *path_arch, char *path_dir) {
     }
 
     FILE *arch = inflate(zip_arch, UNZIP_FILE_NAME);
-
     if (!arch) return ERROR;
 
     fclose(arch);
@@ -133,9 +132,9 @@ int unarchive(char *path_arch, char *path_dir) {
 int checkDir(char *path) {
     char buf[BUF_SIZE];
     realpath(path, buf);
-    if (realpath(path, buf) != NULL) {
-        // char *dir_name = basename(buf);  // Get directory name
+    // char *dir_name = basename(buf);  для получения имени директории
+    if (realpath(path, buf) != NULL)
         return OK;
-    } else
+    else
         return ERROR;
 }

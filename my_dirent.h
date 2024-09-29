@@ -1,5 +1,5 @@
-#ifndef MY_DIRENT
-#define MY_DERENT
+#ifndef MY_DIRENT_H
+#define MY_DERENT_H
 
 #include <stdint.h>
 #include <stdio.h>

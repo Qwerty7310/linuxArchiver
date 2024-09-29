@@ -10,6 +10,7 @@
 #define LOOKAHEAD_BUFFER_SIZE 32
 #define KEY_STR "#archive#"
 
+#ifdef COMPRESS
 // Поиск наибольшего совпадения строки в окне
 Token *findLongestMatch(char *str, int str_size, int buf_size) {
     if (buf_size >= str_size) return NULL;
@@ -86,7 +87,9 @@ FILE *deflate(FILE *file, char *path) {
 
     return zip_file;
 }
+#endif
 
+#ifdef DECOMPRESS
 FILE *inflate(FILE *file, char *path) {
     FILE *new_file = fopen(path, "w");
     if (!new_file) {
@@ -152,3 +155,4 @@ FILE *inflate(FILE *file, char *path) {
 
     return new_file;
 }
+#endif
