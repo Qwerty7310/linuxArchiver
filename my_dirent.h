@@ -2,6 +2,7 @@
 #define MY_DERENT
 
 #include <stdint.h>
+#include <stdio.h>
 
 #define BUF_SIZE 1024
 
@@ -23,5 +24,6 @@ struct dirent {
 DIR *openDir(char *name);
 int closeDir(DIR *dir);
 struct dirent *readDir(DIR *dir);
+int getFileSizeInBytes(FILE *file);
 
 #endif

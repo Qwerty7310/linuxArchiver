@@ -70,3 +70,11 @@ struct dirent *readDir(DIR *dir) {
 
     return result;
 }
+
+int getFileSizeInBytes(FILE *file) {
+    int size = 0;
+    fseek(file, 0, SEEK_END);
+    size = ftell(file);
+    rewind(file);
+    return size;
+}

@@ -10,14 +10,16 @@
 
 #include "file_info.h"
 #include "my_dirent.h"
+#include "compress.h"
 
 #define OK 0
 #define ERROR 1
 #define BUF_SIZE 1024
 
-#define FILE_INFO_NAME "file_info.temp"
-#define FILE_CONTENT_NAME "file_content_name.temp"
-#define FILE_DIR_INFO_NAME "file_dir_info.temp"
+#define FILE_INFO_NAME "file_info.tmp"
+#define FILE_CONTENT_NAME "file_content_name.tmp"
+#define FILE_DIR_INFO_NAME "file_dir_info.tmp"
+#define FILE_RES_NAME "file_res.tmp"
 
 int getDirName(char *path, char *name);
 int compare(const void *a, const void *b);
@@ -40,7 +42,7 @@ FILE *archive(char *path_src, char *path_res) {
     f_info = fopen(FILE_INFO_NAME, "r");
     f_content = fopen(FILE_CONTENT_NAME, "r");
 
-    FILE *f_res = fopen(path_res, "w");
+    FILE *f_res = fopen(FILE_RES_NAME, "w");
 
     char root_dir_name[BUF_SIZE];
     getDirName(path_src, root_dir_name);
@@ -55,7 +57,14 @@ FILE *archive(char *path_src, char *path_res) {
     fclose(f_info);
     fclose(f_content);
 
-    return f_res;
+    fclose(f_res);
+    f_res = fopen(FILE_RES_NAME, "r");
+    FILE *f_zip = deflate(f_res, path_res);
+    fclose(f_res);
+    // remove(FILE_RES_NAME);
+
+    return f_zip;
+    // return f_res;
 }
 
 int archiveDir(char *root_path, char *path, FILE *f_dir_info, FILE *f_info, FILE *f_content, int *cnt_dir,
@@ -151,6 +160,8 @@ int addFileContent(char *full_path, FILE *f_content) {
         fputc(c, f_content);
     }
     fclose(f_src);
+
+    return 0;
 }
 
 int concatInfoAndContent(FILE *f_dir_info, FILE *f_info, FILE *f_content, FILE *f_res, int cnt_dir,
@@ -190,10 +201,10 @@ int getDirName(char *path, char *name) {
         return ERROR;
 }
 
-int getFileSizeInBytes(FILE *file) {
-    int size = 0;
-    fseek(file, 0, SEEK_END);
-    size = ftell(file);
-    rewind(file);
-    return size;
-}
+// int getFileSizeInBytes(FILE *file) {
+//     int size = 0;
+//     fseek(file, 0, SEEK_END);
+//     size = ftell(file);
+//     rewind(file);
+//     return size;
+// }

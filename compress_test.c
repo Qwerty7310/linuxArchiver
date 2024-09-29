@@ -2,44 +2,56 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "compress.h"
-#include "my_dirent.h"
-
 #define WINDOW_SIZE 256
 #define LOOKAHEAD_BUFFER_SIZE 32
 
-/*
+typedef struct {
+    unsigned char offset;
+    unsigned char length;  // or char, if offset = 0
+} Token;
+
+Token *findLongestMatch(char *str, int str_size, int buf_size);
+FILE *deflate(FILE *file, char *path);
+FILE *inflate(FILE *file, char *path);
+int getFileSizeInBytes(FILE *file);
+
+
 int main() {
-    const char *data = "ABABABABABABABABABABABABAB";
-    int data_size = strlen(data);
-    char arr[WINDOW_SIZE];
+    // const char *data = "ABABABABABABABABABABABABAB";
+    // int data_size = strlen(data);
+    // char arr[WINDOW_SIZE];
 
     // FILE *file = fopen("./file.txt", "r");
     // FILE *file = fopen("./Pushkin.jpg", "r");
-    FILE *file = fopen("./Im.png", "r");
+    // FILE *file = fopen("./Im.png", "r");
+    FILE *file = fopen("./file_res.tmp", "r");
 
 
     if (!file) {
         perror("open");
     } else {
-        printf("%ld\n", sizeof(Token));
-        deflate(file, "./zip_file.txt");
+        // printf("%ld\n", sizeof(Token));
+        // deflate(file, "./zip_file.txt");
 
-        FILE *zip_file = fopen("./zip_file.txt", "r");
+        FILE *zip_file = fopen("./archive.arch", "r");
         // inflate(zip_file, "./new_file.txt");
         // inflate(zip_file, "./new_Pushkin.jpg");
-        inflate(zip_file, "./new_im.png");
+        // inflate(zip_file, "./new_im.png");
+        // inflate(zip_file, "./111111.tmp");
+        inflate(zip_file, "./111111.tmp");
+        printf("SUCCESS");
+
     }
 
     return 0;
 }
-*/
+
 
 // Поиск наибольшего совпадения строки в окне
 Token *findLongestMatch(char *str, int str_size, int buf_size) {
     if (buf_size >= str_size) return NULL;
     Token *token = (Token *)malloc(sizeof(Token));
-    if (buf_size < (int)sizeof(Token)) {
+    if (buf_size < sizeof(Token)) {
         token->length = str[buf_size];
         token->offset = 0;
         return token;
@@ -66,8 +78,8 @@ Token *findLongestMatch(char *str, int str_size, int buf_size) {
 FILE *deflate(FILE *file, char *path) {
     FILE *zip_file = fopen(path, "w");
     int file_size = getFileSizeInBytes(file);
-    // int steps = ((int)(file_size / WINDOW_SIZE) == (file_size / WINDOW_SIZE)) ? (file_size / WINDOW_SIZE)
-                                                                            //   : (file_size / WINDOW_SIZE + 1);
+    int steps = ((int)(file_size / WINDOW_SIZE) == (file_size / WINDOW_SIZE)) ? (file_size / WINDOW_SIZE)
+                                                                              : (file_size / WINDOW_SIZE + 1);
     char buffer[WINDOW_SIZE];
     while (file_size > 0) {
         int cur_size = 0;
@@ -87,10 +99,10 @@ FILE *deflate(FILE *file, char *path) {
                 return NULL;
             }
 
-            // if (token->offset < 0) {
-            //     perror("token->offset < 0");
-            //     return NULL;
-            // }
+            if (token->offset < 0) {
+                perror("token->offset < 0");
+                return NULL;
+            }
             fwrite(token, 2, 1, zip_file);
 
             if (token->offset != 0) {
@@ -101,9 +113,7 @@ FILE *deflate(FILE *file, char *path) {
             free(token);
         }
     }
-    
-    // fclose(zip_file);
-    return zip_file;
+    fclose(zip_file);
 }
 
 FILE *inflate(FILE *file, char *path) {
@@ -141,10 +151,10 @@ FILE *inflate(FILE *file, char *path) {
     return new_file;
 }
 
-// int getFileSizeInBytes(FILE *file) {
-//     int size = 0;
-//     fseek(file, 0, SEEK_END);
-//     size = ftell(file);
-//     rewind(file);
-//     return size;
-// }
+int getFileSizeInBytes(FILE *file) {
+    int size = 0;
+    fseek(file, 0, SEEK_END);
+    size = ftell(file);
+    rewind(file);
+    return size;
+}

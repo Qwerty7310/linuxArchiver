@@ -19,12 +19,12 @@ int main(int argc, char *argv[]) {
         // FILE *res = archive("/home/qwerty/OS/test1/", "../../archive.arch");
         // FILE *res = archive("../../test1/", "../../archive.arch");
         FILE *res =
-            archive(argv[1], argv[2]);  // ./linux_archiver '/home/qwerty/OS/test1/' '../../archive.arch'
+            archive(argv[1], argv[2]);  // ./bin/linux_archiver '/home/qwerty/OS/test1/' '../../archive.arch'
         fclose(res);
 #endif
 
 #ifdef UNARCH
-        unarchive(argv[1], argv[2]);  // ./linux_unarchiver '../../archive.arch' '/home/qwerty/OS/Lab_1/'
+        unarchive(argv[1], argv[2]);  // ./bin/linux_unarchiver '../../archive.arch' '/home/qwerty/OS/Lab_1/'
 #endif
 
     } else

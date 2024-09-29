@@ -21,6 +21,6 @@ int addFileContent(char *full_path, FILE *f_content);
 // int concatInfoAndContent(FILE *f_info, FILE *f_content, FILE *f_res);
 int concatInfoAndContent(FILE *f_dir_info, FILE *f_info, FILE *f_content, FILE *f_res, int cnt_dir,
                          int cnt_file);
-int getFileSizeInBytes(FILE *file);
+// int getFileSizeInBytes(FILE *file);
 
 #endif

@@ -22,12 +22,6 @@
 *.la
 *.lo
 
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
 # Executables
 *.out
 *.exe
@@ -42,14 +36,6 @@
 *.idb
 *.pdb
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
 
 .clang-format
 linux_archiver
@@ -57,3 +43,9 @@ linux_unarchiver
 *.txt
 *.png
 *.jpg
+*.tmp
+*.arch
+*.bin
+
+**/bin/
+**/tests/

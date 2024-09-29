@@ -10,17 +10,25 @@
 
 #include "file_info.h"
 #include "my_dirent.h"
+#include "compress.h"
 
 #define OK 0
 #define ERROR 1
 #define BUF_SIZE 1024
 
+#define UNZIP_FILE_NAME "./unzip_arch.tmp"
+
 int unarchive(char *path_arch, char *path_dir) {
-    FILE *arch = fopen(path_arch, "r");  // файл архива
-    if (!arch) {
+    FILE *zip_arch = fopen(path_arch, "r");  // файл архива
+    if (!zip_arch) {
         perror("open archive");
         return ERROR;
     }
+    
+    FILE *arch = inflate(zip_arch, UNZIP_FILE_NAME);
+    fclose(arch);
+    arch = fopen(UNZIP_FILE_NAME, "r");
+
     int cnt_dir;                   // количество директорий
     char root_dir_name[BUF_SIZE];  // имя корневой директории архива
     fread(root_dir_name, sizeof(root_dir_name), 1, arch);
@@ -34,6 +42,8 @@ int unarchive(char *path_arch, char *path_dir) {
     if (checkDir(path_dir) == OK) {  // проверка на наличие
         if (checkDir(new_path) == OK) {
             perror("such a directory already exists");
+            printf("<%s>\n", new_path);
+            printf("<%s>\n", root_dir_name);
             free(new_path);
             return ERROR;
         } else
@@ -76,7 +86,7 @@ int unarchive(char *path_arch, char *path_dir) {
         strcat(full_path, file_info_buf[i].d_name);
 
         FILE *file = fopen(full_path, "w");
-        for (int j = 0; j < file_info_buf[i].d_size; j++) {
+        for (int j = 0; j < (int)file_info_buf[i].d_size; j++) {
             char c = fgetc(arch);
             fputc(c, file);
         }
@@ -85,6 +95,7 @@ int unarchive(char *path_arch, char *path_dir) {
     }
     free(file_info_buf);
     fclose(arch);
+    // remove(UNZIP_FILE_NAME);
     return OK;
 }
 
@@ -92,7 +103,7 @@ int checkDir(char *path) {
     char buf[BUF_SIZE];
     realpath(path, buf);
     if (realpath(path, buf) != NULL) {
-        char *dir_name = basename(buf);  // Get directory name
+        // char *dir_name = basename(buf);  // Get directory name
         return OK;
     } else
         return ERROR;
