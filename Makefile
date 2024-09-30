@@ -48,10 +48,8 @@ $(CPATH)/%.o: %.c
 
 clean:
 	rm -rf $(CPATH)/*
-	rm -rf ../../archive.arch
 	rm -rf ../test*
 	rm -rf *.tmp
-	rm -rf *.arch
 	rm -rf *.bin
 	rm -rf *.out
 

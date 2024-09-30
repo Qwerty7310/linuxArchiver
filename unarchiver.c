@@ -112,7 +112,7 @@ int unarchive(char *path_arch, char *path_dir) {
 
         FILE *file = fopen(full_path, "w");
         if (!file) {
-            perror("open file");
+            perror(full_path);
             return ERROR;
         }
         for (int j = 0; j < (int)file_info_buf[i].d_size; j++) {
