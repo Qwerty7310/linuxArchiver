@@ -7,9 +7,10 @@
 #include "unarchiver.h"
 #endif
 
-#include "my_dirent.h"
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "my_dirent.h"
 
 #define OK 0
 #define ERROR 1
@@ -24,7 +25,6 @@
 
 int main(int argc, char *argv[]) {
     if (argc == 3) {
-
 #ifdef ARCH
         char *src_path = (char *)malloc(sizeof(argv[1]) + 1);
         strcpy(src_path, argv[1]);
@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 #endif
 
 #ifdef UNARCH
-        printf("%sUsage: ./linux_unarchiver <archive_path> <directory_path>%s\n", ORANGE, RESET);
+    printf("%sUsage: ./linux_unarchiver <archive_path> <directory_path>%s\n", ORANGE, RESET);
 #endif
 
     return 0;
