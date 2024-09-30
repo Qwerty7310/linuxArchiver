@@ -41,6 +41,7 @@ Token *findLongestMatch(char *str, int str_size, int buf_size) {
 FILE *deflate(FILE *file, char *path) {
     FILE *zip_file = fopen(path, "w");
     if (!zip_file) {
+        printf("<%s>", path);
         perror("fopen");
         return NULL;
     }

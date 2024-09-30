@@ -33,6 +33,11 @@ FILE *archive(char *path_src, char *path_res) {
 
     int cnt_dir = 0;
     int cnt_file = 0;
+
+    if (getDirName(path_src, NULL) == ERROR) {
+        perror("open directory");
+        return NULL;
+    }
     archiveDir(path_src, path_src, f_dir_info, f_info, f_content, &cnt_dir, &cnt_file);
     fclose(f_dir_info);
     fclose(f_info);
@@ -191,7 +196,7 @@ int getDirName(char *path, char *name) {
     realpath(path, buffer);
     if (realpath(path, buffer) != NULL) {
         char *dir_name = basename(buffer);  // Получаем имя каталога
-        strcpy(name, dir_name);
+        if (name) strcpy(name, dir_name);
         return OK;
     } else
         return ERROR;

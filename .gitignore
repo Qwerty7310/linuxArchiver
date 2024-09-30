@@ -48,5 +48,4 @@ linux_unarchiver
 *.bin
 
 **/bin/
-**/tests/
 **/.vscode/
